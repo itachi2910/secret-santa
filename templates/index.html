@@ -47,7 +47,7 @@
             max-width: 600px;
             margin: 40px auto;
             padding: 30px;
-            background: rgba(255, 255, 255, 0.15);
+            background: #0f2a3d;
             border-radius: 20px;
             backdrop-filter: blur(10px);
             border: 2px solid rgba(255, 255, 255, 0.3);
@@ -136,6 +136,84 @@
             0% { transform: translateY(-100vh) rotate(0deg); }
             100% { transform: translateY(100vh) rotate(360deg); }
         }
+        /* ===== COPY BOX STYLING ===== */
+        .copy-boxes {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 12px;
+            margin: 20px 0;
+            padding: 10px;
+        }
+
+        .copy-item {
+            display: flex;
+            align-items: center;
+            background: rgba(255, 255, 255, 0.2);
+            padding: 8px 12px;
+            border-radius: 12px;
+            border: 2px solid rgba(255, 215, 0, 0.5);
+            backdrop-filter: blur(5px);
+            transition: all 0.3s;
+        }
+
+        .copy-item:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255, 215, 0, 0.3);
+        }
+
+        .small-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            margin-right: 8px;
+            border: 2px solid #ffd700;
+        }
+
+        .name-tag {
+            font-weight: bold;
+            color: #ffd700;
+            margin-right: 10px;
+            font-size: 16px;
+        }
+
+        .copy-btn {
+            background: #ff3b30;
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .copy-btn:hover {
+            background: #c0392b;
+            transform: scale(1.05);
+        }
+
+        .copy-btn:active {
+            transform: scale(0.95);
+        }
+
+        /* Thông báo copy thành công */
+        .copy-notif {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #27ae60;
+            color: white;
+            padding: 12px 20px;
+            border-radius: 10px;
+            font-weight: bold;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            z-index: 1000;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
     </style>
 </head>
 <!-- HIỆU ỨNG TUYẾT RƠI -->
@@ -162,6 +240,29 @@
         snowContainer.appendChild(snowflake);
     }
 </script>
+<!-- Copy to Clipboard Function -->
+<script>
+function copyToClipboard(text) {
+    navigator.clipboard.writeText(text).then(() => {
+        // Hiệu ứng thông báo
+        let notif = document.createElement('div');
+        notif.className = 'copy-notif';
+        notif.innerText = `Đã copy: ${text}`;
+        document.body.appendChild(notif);
+        
+        // Hiển thị
+        setTimeout(() => notif.style.opacity = '1', 10);
+        
+        // Ẩn sau 2 giây
+        setTimeout(() => {
+            notif.style.opacity = '0';
+            setTimeout(() => document.body.removeChild(notif), 300);
+        }, 1500);
+    }).catch(() => {
+        alert('Copy thất bại! Hãy chọn tên và Ctrl+C');
+    });
+}
+</script>
 <body>
     <div class="container">
         <h1>Secret Santa</h1>
@@ -177,12 +278,22 @@
             <button type="submit">Bốc thăm!</button>
         </form>
 
+        <!-- THAY TOÀN BỘ PHẦN DANH SÁCH BẰNG ĐOẠN NÀY -->
         <div class="list">
             <p><strong>Người chơi còn lại:</strong></p>
-            {% for p in remaining %}
-                <img src="{{ url_for('static', filename='avatars/' + p.image) }}" alt="{{ p.name }}">
-                <small>{{ p.name }}</small>
-            {% endfor %}
+            <div class="copy-boxes">
+                {% for p in remaining %}
+                    <div class="copy-item">
+                        <img src="{{ url_for('static', filename='avatars/' + p.image) }}" 
+                            alt="{{ p.name }}" class="small-avatar">
+                        <span class="name-tag">{{ p.name }}</span>
+                        <button type="button" class="copy-btn" 
+                                onclick="copyToClipboard('{{ p.name }}')">
+                            Copy
+                        </button>
+                    </div>
+                {% endfor %}
+            </div>
         </div>
     </div>
 

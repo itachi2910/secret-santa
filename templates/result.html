@@ -47,7 +47,7 @@
             max-width: 600px;
             margin: 40px auto;
             padding: 30px;
-            background: rgba(255, 255, 255, 0.15);
+            background: #0f2a3d;
             border-radius: 20px;
             backdrop-filter: blur(10px);
             border: 2px solid rgba(255, 255, 255, 0.3);
@@ -174,7 +174,6 @@
                 <img src="{{ url_for('static', filename='avatars/' + secret_child.image) }}" alt="{{ secret_child.name }}" class="avatar">
                 <div class="name">{{ secret_child.name }}</div>
             </div>
-            <p>Hãy chuẩn bị quà thật ý nghĩa nhé!</p>
         {% endif %}
         <a href="{{ url_for('index') }}"><button>Quay lại</button></a>
     </div>
