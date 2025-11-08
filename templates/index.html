@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Your Secret Santa</title>
+    <style>
+        body { font-family: Arial, sans-serif; text-align: center; margin: 50px; background: #f4f4f4; }
+        .container { max-width: 500px; margin: auto; background: white; padding: 30px; border-radius: 15px; box-shadow: 0 0 15px rgba(0,0,0,0.1); }
+        input[type="text"] { padding: 12px; width: 80%; font-size: 18px; margin: 10px 0; }
+        button { padding: 12px 30px; font-size: 18px; background: #e74c3c; color: white; border: none; border-radius: 8px; cursor: pointer; }
+        button:hover { background: #c0392b; }
+        .error { color: red; margin: 10px 0; }
+        .list { margin: 20px 0; font-size: 14px; color: #555; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎄 Your Secret Santa 🎁</h1>
+        <p>Nhập tên của bạn để biết bạn là <strong>Secret Santa</strong> của ai!</p>
+        
+        {% if error %}
+            <p class="error">{{ error }}</p>
+        {% endif %}
+        
+        <form method="POST">
+            <input type="text" name="player_name" placeholder="Nhập tên của bạn" required autofocus>
+            <br>
+            <button type="submit">Bốc thăm!</button>
+        </form>
+        
+        <div class="list">
+            <p><strong>Còn lại:</strong> {{ remaining|join(', ') }}</p>
+            <small><a href="{{ url_for('reset') }}">Reset trò chơi (chỉ dùng khi test)</a></small>
+        </div>
+    </div>
+</body>
+</html>
