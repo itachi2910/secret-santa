@@ -85,34 +85,57 @@ def load_state():
     return state
 
 @app.route('/', methods=['GET', 'POST'])
+@app.route('/', methods=['GET', 'POST'])
 def index():
     state = load_state()
     remaining = state['remaining']
     
+    # TẠO DANH SÁCH CÓ ẢNH CHO GIAO DIỆN
+    remaining_info = [state['name_to_info'][name] for name in remaining]
+
     if not remaining:
-        return render_template('result.html', message="Trò chơi đã kết thúc! 🎄", is_end=True)
+        return render_template('result.html', message="Trò chơi đã kết thúc!", is_end=True)
     
     if request.method == 'POST':
         player_name = request.form['player_name'].strip()
         
-        if not player_name or player_name not in remaining:
-            return render_template('index.html', remaining=remaining, 
-                                 error="Tên không hợp lệ hoặc đã bốc thăm!")
-        
+        if not player_name:
+            return render_template('index.html', remaining=remaining_info, 
+                                 error="Vui lòng nhập tên!")
+
+        # 1. ĐÃ BỐC THĂM RỒI?
+        if player_name in state['played']:
+            secret_child_name = state['secret_cycle'][player_name]
+            secret_child = state['name_to_info'][secret_child_name]
+            return render_template('index.html', remaining=remaining_info,
+                                 already_played=True,
+                                 player=player_name,
+                                 secret_child=secret_child)
+
+        # 2. CÓ TRONG DANH SÁCH GỐC?
+        all_participants = load_participants()
+        if player_name not in [p['name'] for p in all_participants]:
+            return render_template('index.html', remaining=remaining_info,
+                                 error="Tên bạn không có trong danh sách người chơi!")
+
+        # 3. CÒN TRONG DANH SÁCH CHƯA BỐC?
+        if player_name not in remaining:
+            return render_template('index.html', remaining=remaining_info,
+                                 error="Tên bạn đã được chọn làm người nhận quà rồi!")
+
+        # 4. HỢP LỆ → BỐC THĂM
         secret_child_name = state['secret_cycle'][player_name]
         secret_child = state['name_to_info'][secret_child_name]
         
-        # Cập nhật trạng thái
         state['remaining'].remove(player_name)
         state['played'].append(player_name)
         save_state(state)
         
         return render_template('result.html',
                              player=player_name,
-                             secret_child=secret_child)  # Trả cả tên + ảnh
+                             secret_child=secret_child)
     
-    # Hiển thị danh sách còn lại (có ảnh nhỏ)
-    remaining_info = [state['name_to_info'][name] for name in remaining]
+    # TRẢ VỀ TRANG CHỦ (GET)
     return render_template('index.html', remaining=remaining_info)
 
 @app.route('/reset-secret-santa-2025')
