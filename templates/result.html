@@ -3,35 +3,184 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kết quả Secret Santa</title>
+    <title>{% if is_end %}Kết thúc{% else %}Your Secret Santa{% endif %}</title>
+    
+    <!-- Google Fonts: Font Giáng sinh -->
+    <link href="https://fonts.googleapis.com/css2?family=Mountains+of+Christmas:wght@700&family=Patrick+Hand&display=swap" rel="stylesheet">
+    
     <style>
-        body { font-family: Arial, sans-serif; text-align: center; margin: 50px; background: #f4f4f4; }
-        .container { max-width: 600px; margin: auto; background: white; padding: 40px; border-radius: 20px; box-shadow: 0 0 20px rgba(0,0,0,0.1); }
-        h1 { color: #27ae60; }
-        .secret-box { 
-            background: #fff8f0; padding: 25px; border-radius: 15px; margin: 25px 0; 
-            border: 3px dashed #e74c3c; font-size: 22px;
+        /* ===== NỀN GIÁNG SINH ===== */
+        body {
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            font-family: 'Patrick Hand', cursive;
+            background: linear-gradient(to bottom, #0f2a3d, #1a4b6e);
+            color: #fff;
+            text-align: center;
+            position: relative;
+            overflow-x: hidden;
         }
-        .avatar { width: 480px; height: 480px; border-radius: 50%; object-fit: cover; border: 4px solid #e74c3c; margin: 10px 0; }
-        .name { font-weight: bold; font-size: 28px; color: #c0392b; }
-        button { padding: 12px 30px; font-size: 18px; background: #3498db; color: white; border: none; border-radius: 8px; cursor: pointer; margin-top: 20px; }
-        button:hover { background: #2980b9; }
+
+        /* Nền tuyết + hình nền mờ */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: url('https://images.unsplash.com/photo-1543589077-579acf373eca?auto=format&fit=crop&w=1350&q=80') center/cover no-repeat;
+            opacity: 0.3;
+            z-index: -2;
+        }
+
+        /* Hiệu ứng tuyết rơi */
+        .snow {
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            top: 0; left: 0;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        /* Container chính */
+        .container {
+            max-width: 600px;
+            margin: 40px auto;
+            padding: 30px;
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 20px;
+            backdrop-filter: blur(10px);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            position: relative;
+            z-index: 1;
+        }
+
+        h1 {
+            font-family: 'Mountains of Christmas', cursive;
+            font-size: 48px;
+            color: #ff3b30;
+            text-shadow: 0 0 10px #ff3b30, 0 0 20px #ffd700;
+            margin-bottom: 10px;
+        }
+
+        p { font-size: 20px; margin: 15px 0; }
+
+        input[type="text"] {
+            padding: 14px;
+            width: 80%;
+            font-size: 18px;
+            border: none;
+            border-radius: 12px;
+            margin: 15px 0;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+        }
+
+        button {
+            padding: 14px 36px;
+            font-size: 20px;
+            background: linear-gradient(45deg, #d32f2f, #ff6b6b);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: bold;
+            box-shadow: 0 5px 15px rgba(211, 47, 47, 0.4);
+            transition: all 0.3s;
+        }
+        button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(211, 47, 47, 0.6);
+        }
+
+        .error { color: #ff3b30; font-weight: bold; }
+
+        .avatar {
+            width: 90px; height: 90px;
+            border-radius: 50%;
+            border: 5px solid #ffd700;
+            box-shadow: 0 0 20px #ffd700;
+            margin: 15px 0;
+        }
+
+        .secret-box {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 30px;
+            border-radius: 20px;
+            border: 3px dashed #ffd700;
+            margin: 25px 0;
+            font-size: 24px;
+        }
+
+        .name {
+            font-size: 36px;
+            font-weight: bold;
+            color: #ffd700;
+            text-shadow: 0 0 10px #ff3b30;
+        }
+
+        /* Danh sách còn lại */
+        .list {
+            margin: 20px 0;
+            font-size: 16px;
+        }
+        .list img {
+            width: 32px; height: 32px;
+            border-radius: 50%;
+            margin: 2px;
+            border: 2px solid #ffd700;
+        }
+
+        /* Tuyết rơi */
+        @keyframes snowfall {
+            0% { transform: translateY(-100vh) rotate(0deg); }
+            100% { transform: translateY(100vh) rotate(360deg); }
+        }
     </style>
 </head>
+<!-- HIỆU ỨNG TUYẾT RƠI -->
+<div class="snow"></div>
+
+<script>
+    const snowContainer = document.querySelector('.snow');
+    const snowflakesCount = 80;
+
+    for (let i = 0; i < snowflakesCount; i++) {
+        const snowflake = document.createElement('div');
+        snowflake.innerHTML = '❅';
+        snowflake.style.cssText = `
+            position: absolute;
+            color: white;
+            font-size: ${Math.random() * 20 + 10}px;
+            top: -${Math.random() * 100}%;
+            left: ${Math.random() * 100}%;
+            opacity: ${Math.random() * 0.8 + 0.2};
+            animation: snowfall ${Math.random() * 8 + 5}s linear infinite;
+            animation-delay: ${Math.random() * 5}s;
+            pointer-events: none;
+        `;
+        snowContainer.appendChild(snowflake);
+    }
+</script>
 <body>
     <div class="container">
         {% if is_end %}
-            <h1>🎄 Trò chơi kết thúc!</h1>
+            <h1>Trò chơi kết thúc!</h1>
             <p>{{ message }}</p>
         {% else %}
-            <h1>🎉 Chúc mừng {{ player }}!</h1>
+            <h1>Chúc mừng {{ player }}!</h1>
             <div class="secret-box">
                 <p>Bạn là <strong>Secret Santa</strong> của:</p>
                 <img src="{{ url_for('static', filename='avatars/' + secret_child.image) }}" alt="{{ secret_child.name }}" class="avatar">
                 <div class="name">{{ secret_child.name }}</div>
             </div>
+            <p>Hãy chuẩn bị quà thật ý nghĩa nhé!</p>
         {% endif %}
         <a href="{{ url_for('index') }}"><button>Quay lại</button></a>
     </div>
+
+    <!-- Tuyết rơi -->
+    <div class="snow"></div>
+    <script>/* JS tuyết ở trên */</script>
 </body>
 </html>
