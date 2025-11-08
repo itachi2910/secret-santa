@@ -30,6 +30,7 @@
         </form>
         
         <div class="list">
+            <p><strong>Còn lại:</strong> {{ remaining|join(', ') }}</p>
             <small><a href="{{ url_for('reset') }}">Reset trò chơi (chỉ dùng khi test)</a></small>
         </div>
     </div>

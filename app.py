@@ -28,8 +28,8 @@ def init_game():
     
     # DANH SÁCH TÊN (bạn sửa ở đây)
     initial_names = [
-        "Phuong Thuy", "Ngoc Nhu", "Lam Ngoc", "Minh Tuyet"
-        "Linh Nhi", "Vinh Hoang", "Tai Pham"
+        "Phương Thuỵ", "Ngọc Như", "Lam Ngọc", "Minh Tuyết",
+        "Linh Nhi", "Vinh Hoàng", "Tài Phạm"
     ]
     
     # Tạo vòng bí mật
