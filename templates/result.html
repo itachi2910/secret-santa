@@ -6,9 +6,14 @@
     <title>Kết quả Secret Santa</title>
     <style>
         body { font-family: Arial, sans-serif; text-align: center; margin: 50px; background: #f4f4f4; }
-        .container { max-width: 500px; margin: auto; background: white; padding: 40px; border-radius: 15px; box-shadow: 0 0 15px rgba(0,0,0,0.1); }
+        .container { max-width: 600px; margin: auto; background: white; padding: 40px; border-radius: 20px; box-shadow: 0 0 20px rgba(0,0,0,0.1); }
         h1 { color: #27ae60; }
-        .secret { font-size: 28px; font-weight: bold; color: #e74c3c; margin: 20px 0; }
+        .secret-box { 
+            background: #fff8f0; padding: 25px; border-radius: 15px; margin: 25px 0; 
+            border: 3px dashed #e74c3c; font-size: 22px;
+        }
+        .avatar { width: 480px; height: 480px; border-radius: 50%; object-fit: cover; border: 4px solid #e74c3c; margin: 10px 0; }
+        .name { font-weight: bold; font-size: 28px; color: #c0392b; }
         button { padding: 12px 30px; font-size: 18px; background: #3498db; color: white; border: none; border-radius: 8px; cursor: pointer; margin-top: 20px; }
         button:hover { background: #2980b9; }
     </style>
@@ -20,10 +25,13 @@
             <p>{{ message }}</p>
         {% else %}
             <h1>🎉 Chúc mừng {{ player }}!</h1>
-            <p class="secret">Bạn là <strong>Secret Santa</strong> của:</p>
-            <h2>🎁 {{ secret_child }} 🎁</h2>
-            <p>Hãy chuẩn bị quà thật ý nghĩa nhé!</p>
+            <div class="secret-box">
+                <p>Bạn là <strong>Secret Santa</strong> của:</p>
+                <img src="{{ url_for('static', filename='avatars/' + secret_child.image) }}" alt="{{ secret_child.name }}" class="avatar">
+                <div class="name">{{ secret_child.name }}</div>
+            </div>
         {% endif %}
+        <a href="{{ url_for('index') }}"><button>Quay lại</button></a>
     </div>
 </body>
 </html>

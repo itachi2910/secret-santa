@@ -16,7 +16,7 @@
 </head>
 <body>
     <div class="container">
-        <h1>🎄 Your Secret Santa 🎁</h1>
+        <h1>🎄 Secret Santa 🎁</h1>
         <p>Nhập tên của bạn để biết bạn là <strong>Secret Santa</strong> của ai!</p>
         
         {% if error %}
@@ -30,8 +30,12 @@
         </form>
         
         <div class="list">
-            <p><strong>Còn lại:</strong> {{ remaining|join(', ') }}</p>
-            <small><a href="{{ url_for('reset') }}">Reset trò chơi (chỉ dùng khi test)</a></small>
+            <p><strong>Còn lại:</strong></p>
+            {% for p in remaining %}
+                <img src="{{ url_for('static', filename='avatars/' + p.image) }}" 
+                    alt="{{ p.name }}" style="width:30px; height:30px; border-radius:50%; vertical-align:middle; margin:2px;">
+                <small>{{ p.name }}</small>
+            {% endfor %}
         </div>
     </div>
 </body>
