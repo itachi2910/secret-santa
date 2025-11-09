@@ -94,7 +94,8 @@ def index():
     remaining_info = [state['name_to_info'][name] for name in remaining]
 
     if not remaining:
-        return render_template('result.html', message="Trò chơi đã kết thúc!", is_end=True)
+        return render_template('result.html',
+                                 message="🌲 Trò chơi đã kết thúc! Năm sau chị em lại chơi nhé! 🌲", is_end=True)
     
     if request.method == 'POST':
         player_name = request.form['player_name'].strip()
