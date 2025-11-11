@@ -215,6 +215,55 @@
             opacity: 0;
             transition: opacity 0.3s;
         }
+
+        /* ===== MODAL XÁC NHẬN ===== */
+        .modal {
+            display: none;
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.7); z-index: 1000;
+            justify-content: center; align-items: center;
+            backdrop-filter: blur(5px);
+        }
+
+        .modal-content {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 30px; border-radius: 20px;
+            text-align: center; max-width: 400px; width: 90%;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            border: 3px solid #ffd700;
+            animation: modalPop 0.3s ease;
+        }
+
+        @keyframes modalPop {
+            from { transform: scale(0.8); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+
+        .confirm-name {
+            font-size: 28px; font-weight: bold; color: #c0392b;
+            margin: 20px 0; padding: 15px;
+            background: #fff8f0; border-radius: 12px;
+            border: 2px dashed #ff6b6b;
+        }
+
+        .modal-buttons {
+            display: flex; justify-content: center; gap: 15px; margin-top: 20px;
+        }
+
+        .btn-cancel, .btn-confirm {
+            padding: 12px 28px; font-size: 16px; border: none; border-radius: 10px;
+            cursor: pointer; font-weight: bold; transition: 0.3s;
+        }
+
+        .btn-cancel {
+            background: #95a5a6; color: white;
+        }
+        .btn-cancel:hover { background: #7f8c8d; transform: translateY(-2px); }
+
+        .btn-confirm {
+            background: #27ae60; color: white;
+        }
+        .btn-confirm:hover { background: #219a52; transform: translateY(-2px); }
     </style>
 </head>
 <!-- HIỆU ỨNG TUYẾT RƠI -->
@@ -264,24 +313,91 @@ function copyToClipboard(text) {
     });
 }
 </script>
+
+<script>
+    const form = document.getElementById('santaForm');
+    const modal = document.getElementById('confirmModal');
+    const confirmNameDisplay = document.getElementById('confirmNameDisplay');
+    const cancelBtn = document.getElementById('cancelBtn');
+    const confirmBtn = document.getElementById('confirmBtn');
+    let pendingName = '';
+
+    form.addEventListener('submit', function(e) {
+        e.preventDefault(); // Ngăn submit ngay
+        const inputName = document.getElementById('playerNameInput').value.trim();
+        
+        if (!inputName) {
+            alert('Vui lòng nhập tên!');
+            return;
+        }
+
+        pendingName = inputName;
+        confirmNameDisplay.textContent = inputName;
+        modal.style.display = 'flex'; // Hiện modal
+    });
+
+    cancelBtn.onclick = function() {
+        modal.style.display = 'none';
+        pendingName = '';
+    };
+
+    confirmBtn.onclick = function() {
+        modal.style.display = 'none';
+        // Tạo form ẩn để submit thật
+        const realForm = document.createElement('form');
+        realForm.method = 'POST';
+        realForm.action = '/';
+        realForm.style.display = 'none';
+
+        const input = document.createElement('input');
+        input.type = 'text';
+        input.name = 'player_name';
+        input.value = pendingName;
+        realForm.appendChild(input);
+
+        document.body.appendChild(realForm);
+        realForm.submit();
+    };
+
+    // Đóng modal khi click ngoài
+    window.onclick = function(e) {
+        if (e.target === modal) {
+            modal.style.display = 'none';
+        }
+    };
+</script>
+
 <body>
     <div class="container">
-        <h1>🎁🎅 Secret Santa 🎅🎁</h1>
-        <p>Nhập tên để bốc thăm người bạn sẽ tặng quà!</p>
+        <h1>🎁 Secret Santa 🎁</h1>
+        <p>Muốn biết năm nay chị em là santa của ai? Nhập tên của mình dô nè:</p>
 
         {% if error %}
             <p class="error">{{ error }}</p>
         {% endif %}
 
         <form method="POST">
-            <input type="text" name="player_name" placeholder="Tên của bạn là..." required autofocus>
+            <input type="text" name="player_name" placeholder="Tên của chị em là..." required autofocus>
             <br>
             <button type="submit">Bốc thăm!</button>
         </form>
 
+        <!-- MODAL XÁC NHẬN -->
+        <div id="confirmModal" class="modal">
+            <div class="modal-content">
+                <h3>Xác nhận tên</h3>
+                <p>Chị em kiểm tra lại tên mình nhe:</p>
+                <div class="confirm-name" id="confirmNameDisplay"></div>
+                <div class="modal-buttons">
+                    <button type="button" id="cancelBtn" class="btn-cancel">Hủy bỏ</button>
+                    <button type="button" id="confirmBtn" class="btn-confirm">Xác nhận</button>
+                </div>
+            </div>
+        </div>
+
         <!-- THAY TOÀN BỘ PHẦN DANH SÁCH BẰNG ĐOẠN NÀY -->
         <div class="list">
-            <p><strong>Người chơi còn lại:</strong></p>
+            <p><strong>Chị em chưa chơi:</strong></p>
             <div class="copy-boxes">
                 {% for p in remaining %}
                     <div class="copy-item">
